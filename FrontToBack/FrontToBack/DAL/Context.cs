@@ -24,6 +24,8 @@ namespace FrontToBack.DAL
         public DbSet<BlogsSlider> BlogsSliders { get; set; }
         public DbSet<InstagramSlider> InstagramSliders { get; set; }
         public DbSet<Bio> Bios { get; set; }
+        public DbSet<Sales> Sales { get; set; }
+        public DbSet<SalesProduct> SalesProducts { get; set; }
 
 
 

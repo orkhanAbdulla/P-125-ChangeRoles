@@ -2,6 +2,7 @@
 using FrontToBack.Models;
 using FrontToBack.ViewModels;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
@@ -14,9 +15,12 @@ namespace FrontToBack.Controllers
     public class BasketController : Controller
     {
         private readonly Context _context;
-        public BasketController(Context context)
+        private readonly UserManager<AppUser> _userManager;
+
+        public BasketController(Context context,UserManager<AppUser>userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
         public IActionResult Index()
         {
@@ -77,6 +81,62 @@ namespace FrontToBack.Controllers
 
             }
             return View(products);
+        }
+
+        public async Task<IActionResult> Sale()
+        {
+            if (!User.Identity.IsAuthenticated) return RedirectToAction("Login", "Account");
+
+            AppUser user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            Sales sales = new Sales();
+            sales.AppUserId = user.Id;
+            sales.SaleDate = DateTime.Now;
+
+           
+
+            List<BasketProduct> basketProducts = JsonConvert.DeserializeObject<List<BasketProduct>>(Request.Cookies["basket"]);
+            List<SalesProduct> salesProducts = new List<SalesProduct>();
+
+            List<Product> dbProducts = new List<Product>();
+            foreach (var item in basketProducts)
+            {
+                Product dbProduct = await _context.Products.FindAsync(item.Id);
+                if (dbProduct.Count<item.Count)
+                {
+                    TempData["Fail"] = $"{item.Name} bazada yoxdur";
+                    return RedirectToAction("ShowBasket", "Basket");
+                }
+                dbProducts.Add(dbProduct);
+               
+
+            }
+
+            double total = 0;
+            foreach (var basketProduct in basketProducts)
+            {
+                Product dbProduct = dbProducts.Find(p => p.Id == basketProduct.Id);
+
+               await UpdateProductCount(dbProduct, basketProduct);
+
+                SalesProduct salesProduct = new SalesProduct();
+                salesProduct.SalesId = sales.Id;
+                salesProduct.ProductId = dbProduct.Id;
+                salesProducts.Add(salesProduct);
+                total += basketProduct.Count * dbProduct.Price;
+            }
+            sales.SalesProducts = salesProducts;
+            sales.Total = total;
+            await _context.Sales.AddAsync(sales);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Sales Done";
+            return RedirectToAction("Index", "Home");
+        }
+
+        private async Task UpdateProductCount(Product product,BasketProduct basketProduct)
+        {
+            product.Count = product.Count - basketProduct.Count;
+            await _context.SaveChangesAsync();
         }
     }
 }

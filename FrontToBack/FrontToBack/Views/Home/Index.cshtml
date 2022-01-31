@@ -7,6 +7,16 @@
 
     <!-- SLIDER START -->
 
+    <div class="container">
+        <div class="row">
+            @if (TempData["Success"] != null)
+            {
+            <div id="successAlert" class="alert alert-success">@TempData["Success"]</div>
+            }
+            
+        </div>
+    </div>
+
     <section id="slider">
         <div class="owl-carousel slider">
             @foreach (var item in Model.Sliders)
@@ -270,3 +280,15 @@
 
 </main>
 
+@section Scripts{ 
+
+<script>
+
+    let successAlert = document.getElementById("successAlert");
+
+    setTimeout(() => {
+        successAlert.remove();
+    },3000)
+</script>
+
+}

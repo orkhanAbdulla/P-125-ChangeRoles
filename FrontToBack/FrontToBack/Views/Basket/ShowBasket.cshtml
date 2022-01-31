@@ -3,7 +3,15 @@
     ViewData["Title"] = "ShowBasket";
     double Total = 0;
 }
+<div class="container">
+    <div class="row">
+        @if (TempData["Fail"] != null)
+        {
+            <div id="successAlert" class="alert alert-danger">@TempData["Fail"]</div>
+        }
 
+    </div>
+</div>
 <div class="container">
     <div class="row">
         @if (Model.Count != 0)
@@ -37,15 +45,33 @@
                     }
                 </tbody>
             </table>
-        <p>TotalPrice: @Total</p>
+            <p>TotalPrice: @Total</p>
 
 
         }
         else
         {
-         <a asp-controller="home" asp-action="index">Go to Home</a>
+            <a asp-controller="home" asp-action="index">Go to Home</a>
         }
 
     </div>
+
+    <div class="row">
+        <form action="Sale" method="post">
+            <button class="btn btn-outline-primary">Buy Now..</button>
+        </form>
+    </div>
 </div>
 
+@section Scripts{
+
+    <script>
+
+    let successAlert = document.getElementById("successAlert");
+
+    setTimeout(() => {
+        successAlert.remove();
+    },3000)
+    </script>
+
+}

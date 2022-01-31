@@ -1,0 +1,45 @@
+﻿@model IEnumerable<Sales>
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<div class="col-lg-6 grid-margin stretch-card">
+    <div class="card ">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>FullName</th>
+                            <th>Email</th>
+                            <th>ProductName</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.AppUser.FullName</td>
+                                <td>@item.AppUser.Email</td>
+                                <td>
+                                    @foreach (var salesProduct in item.SalesProducts)
+                                    {
+                                        <p>@salesProduct.Product.Name</p>
+                                    }
+                                </td>
+                                <td>@item.SaleDate.ToString("MM/dd/yyyy")</td>
+                                <td>@item.Total</td>
+                            </tr>
+                        }
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

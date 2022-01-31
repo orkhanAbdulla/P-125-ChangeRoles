@@ -87,14 +87,14 @@ namespace FrontToBack.Controllers
                 ModelState.AddModelError("", "UserName or Password invalid");
                 return View();
             }
-
-            var singInResult =await  _signInManager.PasswordSignInAsync(dbUser, login.Password, true, true);
-
             if (!dbUser.IsActive)
             {
                 ModelState.AddModelError("", "user is deactive");
                 return View();
             }
+            var singInResult =await  _signInManager.PasswordSignInAsync(dbUser, login.Password, true, true);
+
+           
 
             if (singInResult.IsLockedOut)
             {
